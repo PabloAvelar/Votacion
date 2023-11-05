@@ -17,6 +17,9 @@ export default class Login extends Component {
     }
 
     render() {
+        toSignup = ()=>{
+            this.props.navigation.navigate("Signup");
+        }
         return (
             <View style={styles.root}>
                 <View style={{ alignItems: 'center', marginVertical: "20%" }}>
@@ -42,7 +45,7 @@ export default class Login extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={{ marginTop: '8%' }}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={toSignup}>
                             <Text style={{ color: palette.darkblue}}>También puedes <Text style={{fontWeight: 'bold' }}>registrarte</Text></Text>
                         </TouchableOpacity>
                     </View>

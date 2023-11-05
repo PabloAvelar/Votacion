@@ -17,6 +17,9 @@ export default class Signup extends Component {
     }
 
     render() {
+        toLogin = ()=>{
+            this.props.navigation.navigate("Login");
+        }
         return (
             <View style={styles.root}>
                 <View style={{ alignItems: 'center' }}>
@@ -50,7 +53,7 @@ export default class Signup extends Component {
                         </TouchableOpacity>
                     </View>
                     <View style={{ marginTop: '8%' }}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={toLogin}>
                             <Text style={{ color: palette.darkblue }}>También puedes <Text style={{ fontWeight: 'bold' }}>iniciar sesión</Text></Text>
                         </TouchableOpacity>
                     </View>
