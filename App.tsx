@@ -26,6 +26,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import Login from './js/login';
+import Signup from './js/signup';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -65,7 +66,7 @@ function App(): JSX.Element {
   };
 
   return (
-    <Login></Login>
+    <Signup></Signup>
   );
 }
 
