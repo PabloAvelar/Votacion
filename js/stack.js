@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Login from './login';
 import Signup from './signup';
+import Voting from './voting';
 
 export default class Stack extends Component {
     constructor(props) {
@@ -19,7 +20,7 @@ export default class Stack extends Component {
             <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-            <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
+            <Stack.Screen name="Voting" component={Voting} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
         );

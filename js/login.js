@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 
 // Paleta de colores
@@ -13,13 +13,42 @@ export default class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            email: '',
+            password: '',
         };
     }
 
     render() {
-        toSignup = ()=>{
-            this.props.navigation.navigate("Signup");
+        const verify = () => {
+            if (this.state.email.trim() === '' || this.state.password.trim() === '') {
+                Alert.alert('Campos requeridos', 'Llena todo los campos del formulario.');
+                return
+            }
+
+            // Copiando la referencia de Login
+            const _this = this;
+
+            const xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Typical action to be performed when the document is ready:
+                    let res = xhttp.responseText;
+
+                    if(res == '404'){ // Si el usuario no existe
+                        Alert.alert("Usuario inexistente", 'Contacta al administrador');
+                    }else if(res == '0'){ // Si la contraseña es inválida
+                        Alert.alert('Contraseña inválida', 'Asegúrate de ingresar las credenciales válidas');
+                    }else if(res == '1'){ // Ingresando como votante
+                        _this.props.navigation.navigate("Voting");
+                    }else if(res == 'admin'){
+                        console.log("ADMIN");
+                    }
+                }
+            };
+            xhttp.open("GET", `https://pabloavelar.mx/votacion/login.php?email=${this.state.email}&password=${this.state.password}`, true);
+            xhttp.send();
         }
+
         return (
             <View style={styles.root}>
                 <View style={{ alignItems: 'center', marginVertical: "20%" }}>
@@ -33,20 +62,15 @@ export default class Login extends Component {
                     <View style={styles.form}>
                         <View style={styles.input}>
                             <Icon name={'envelope'} size={20} style={styles.icon} />
-                            <TextInput placeholder='Correo' style={{ width: '84%', color: palette.darkblue }} />
+                            <TextInput placeholder='Correo' style={{ width: 280, color: palette.darkblue }} onChangeText={email => this.setState({ email })} />
                         </View>
 
                         <View style={styles.input}>
                             <Icon name={'lock'} size={20} style={styles.icon} />
-                            <TextInput placeholder='Contraseña' style={{ width: '84%', color: palette.darkblue }} />
+                            <TextInput placeholder='Contraseña' style={{ width: 280, color: palette.darkblue }} onChangeText={password => this.setState({ password })} />
                         </View>
-                        <TouchableOpacity style={styles.button}>
-                            <Text style={{ color: palette.white, fontSize: 20, fontWeight: 'bold' }}>Iniciar sesión</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{ marginTop: '8%' }}>
-                        <TouchableOpacity onPress={toSignup}>
-                            <Text style={{ color: palette.darkblue}}>También puedes <Text style={{fontWeight: 'bold' }}>registrarte</Text></Text>
+                        <TouchableOpacity style={styles.button} onPress={verify}>
+                            <Text style={{ color: palette.white, fontSize: 20, fontWeight: 'bold' }}>Ingresar</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -83,14 +107,14 @@ const styles = StyleSheet.create({
     },
 
     form: {
-        height: '35%',
+        height: '40%',
         minHeight: '35%',
         alignItems: 'center',
         justifyContent: 'space-evenly'
     },
 
     input: {
-        height: 40,
+        height: 50,
         backgroundColor: palette.lightblue,
         color: palette.darkblue,
         width: 280,
@@ -106,7 +130,7 @@ const styles = StyleSheet.create({
         color: 'white',
         height: 60,
         width: 280,
-        borderRadius: 5,
+        borderRadius: 5
     }
 
 });
