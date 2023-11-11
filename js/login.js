@@ -41,7 +41,7 @@ export default class Login extends Component {
                     }else if(res == '1'){ // Ingresando como votante
                         _this.props.navigation.navigate("Voting");
                     }else if(res == 'admin'){
-                        console.log("ADMIN");
+                        _this.props.navigation.navigate("ShowVotes", {email: _this.state.email, password: _this.state.password});
                     }
                 }
             };

@@ -81,3 +81,5 @@ Gemfile
 index.js
 jest.config.js
 metro.config.js
+.env
+db
