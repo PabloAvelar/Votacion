@@ -20,7 +20,7 @@ export default class Voting extends Component {
       oficios: [],
       index: 0,
       loading: true,
-      loadingVote: true,
+      loadingVote: false,
       vote: 0,
 
     };
@@ -44,6 +44,9 @@ export default class Voting extends Component {
     }
 
     const sendVote = () => {
+      // Iniciando la espera hasta que se registre el voto
+      this.setState({loadingVote: true});
+
       const email = this.props.route.params.email;
       const password = this.props.route.params.password;
 
@@ -63,7 +66,7 @@ export default class Voting extends Component {
             Alert.alert("Error al registrar voto", "Contacta al administrador.");
           }
 
-          // Esperando a que se haga el voto
+          // Una vez que cargue el voto, se termina la espera
           _this.setState({ loadingVote: false });
         }
       };
@@ -97,10 +100,12 @@ export default class Voting extends Component {
       return this.state.vote == vote ? true : false;
     }
 
-    getOficios();
-    if (this.state.loading) {
+    if (this.state.loading || this.state.loadingVote) {
       console.log("[cargando...]");
+      console.log("loading: ", this.state.loading);
+      console.log("loading vote: ", this.state.loadingVote);
       // Se llama la primera vez
+      getOficios();
       return (<View>
         <Text>cargando...</Text>
       </View>)
