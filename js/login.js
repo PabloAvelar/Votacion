@@ -15,6 +15,7 @@ export default class Login extends Component {
         this.state = {
             email: '',
             password: '',
+
         };
     }
 
@@ -39,7 +40,7 @@ export default class Login extends Component {
                     }else if(res == '0'){ // Si la contraseña es inválida
                         Alert.alert('Contraseña inválida', 'Asegúrate de ingresar las credenciales válidas');
                     }else if(res == '1'){ // Ingresando como votante
-                        _this.props.navigation.navigate("Voting");
+                        _this.props.navigation.navigate("Voting", {email: _this.state.email, password: _this.state.password});
                     }else if(res == 'admin'){
                         _this.props.navigation.navigate("ShowVotes", {email: _this.state.email, password: _this.state.password});
                     }
@@ -51,9 +52,9 @@ export default class Login extends Component {
 
         return (
             <View style={styles.root}>
-                <View style={{ alignItems: 'center', marginVertical: "20%" }}>
+                <View style={styles.container}>
                     <Image
-                        style={{ width: 200, height: 200 }}
+                        style={{width: 200, height:200}}
                         source={require('../img/vote.png')}
                     />
                 </View>
@@ -85,6 +86,11 @@ const styles = StyleSheet.create({
         height: '100%'
     },
 
+    container:{
+        alignItems: 'center',
+        marginVertical: "20%"
+    },
+
     login: {
         alignItems: 'center',
         backgroundColor: palette.white,
@@ -108,9 +114,9 @@ const styles = StyleSheet.create({
 
     form: {
         height: '40%',
-        minHeight: '35%',
+        minHeight: 329,
         alignItems: 'center',
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
     },
 
     input: {

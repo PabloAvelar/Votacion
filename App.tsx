@@ -26,6 +26,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import Login from './js/stack';
+import Voting from './js/voting';
 
 type SectionProps = PropsWithChildren<{
   title: string;

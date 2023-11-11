@@ -23,6 +23,7 @@ export default class ShowVotes extends Component {
         // Copiando la referencia de ShowVotes
         _this = this;
         const getVotes = () => {
+            const url = `https://pabloavelar.mx/votacion/retrievevotes.php?email=${this.props.route.params.email}&password=${this.props.route.params.password}`;
             const xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
@@ -30,13 +31,13 @@ export default class ShowVotes extends Component {
                     _this.setState({ oficios: JSON.parse(xhttp.responseText), loading: false });
                 }
             };
-            xhttp.open("GET", `https://pabloavelar.mx/votacion/retrievevotes.php?email=admin@admin.com&password=chivas`, true);
+            xhttp.open("GET", url, true);
             xhttp.send();
         }
 
         const next = () => {
             if (this.state.index < this.state.oficios.length - 1) {
-                console.log(this.state.oficios[this.state.index]["IdOficioCE"]);
+                console.log(this.state.oficios[this.state.index]["Id"]);
                 this.state.index++;
             }
         }
@@ -54,14 +55,14 @@ export default class ShowVotes extends Component {
 
                 </View>
                 <View style={styles.voteFrame}>
-                    <Text style={styles.txt_title}>{this.state.oficios[this.state.index]["IdOficioCE"]}</Text>
+                    <Text style={styles.txt_title}>{this.state.oficios[this.state.index]["Id"]}</Text>
                     <View style={styles.form}>
                         <View style={{ ...styles.option, backgroundColor: '#52C85D' }}>
                             <Icon name={'check'} size={20} style={{ ...styles.icon, color: '#195B08' }} />
                             <Text style={{ ...styles.optionText, color: '#195B08' }}>A Favor</Text>
                             <View style={{ ...styles.checkview, backgroundColor: '#195B08' }}>
                                 <Text style={styles.number}>
-                                    {this.state.oficios[this.state.index]["A_favor"]}
+                                    {this.state.oficios[this.state.index]["A_Favor"]}
                                 </Text>
                             </View>
                         </View>
@@ -71,7 +72,7 @@ export default class ShowVotes extends Component {
                             <Text style={{ ...styles.optionText, color: '#5B0808' }}>En Contra</Text>
                             <View style={{ ...styles.checkview, backgroundColor: '#5B0808' }}>
                                 <Text style={styles.number}>
-                                    {this.state.oficios[this.state.index]["En_contra"]}
+                                    {this.state.oficios[this.state.index]["En_Contra"]}
                                 </Text>
                             </View>
                         </View>
