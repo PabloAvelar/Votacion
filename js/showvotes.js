@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
-import Finish from './finish';
 
 // Paleta de colores
 const palette = {
@@ -37,16 +36,17 @@ export default class ShowVotes extends Component {
         }
 
         const next = () => {
+            console.log(`${this.state.index}/${this.state.oficios.length-1}`);
             if (this.state.index <= this.state.oficios.length - 1) {
                 console.log(this.state.oficios[this.state.index]["Id"]);
                 this.state.index++;
             }
 
             if (this.state.index == this.state.oficios.length - 1){
-                console.log("1");
-                // return (
-                //     <Finish />
-                // )
+                console.log("FINISH WE");
+                return (
+                    <Finish />
+                )
             }
         }
 

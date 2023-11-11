@@ -3,9 +3,9 @@ import { View, Text } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Login from './login';
-import Signup from './signup';
 import Voting from './voting';
 import ShowVotes from './showvotes';
+import Finish from './finish';
 
 export default class Stack extends Component {
     constructor(props) {

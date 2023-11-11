@@ -21,6 +21,10 @@ export default class Login extends Component {
 
     render() {
         const verify = () => {
+            // Preparando credenciales
+            this.setState({email: this.state.email.replace(/ /g, '')});
+            this.setState({password: this.state.password.replace(/ /g, '')});
+
             if (this.state.email.trim() === '' || this.state.password.trim() === '') {
                 Alert.alert('Campos requeridos', 'Llena todo los campos del formulario.');
                 return

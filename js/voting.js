@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, Alert, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import BouncyCheckboxGroup, { ICheckboxButton } from "react-native-bouncy-checkbox-group";
+import Finish from './finish';
 
 // Paleta de colores
 const palette = {
@@ -17,9 +17,10 @@ export default class Voting extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      actas: [],
+      oficios: [],
       index: 0,
       loading: true,
+      loadingVote: true,
       vote: 0,
 
     };
@@ -29,12 +30,12 @@ export default class Voting extends Component {
     // Copiando la referencia de ShowVotes
     _this = this;
 
-    const getActas = () => {
+    const getOficios = () => {
       const xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           // Se obtienen todos los registros con votos
-          _this.setState({ actas: JSON.parse(xhttp.responseText), loading: false });
+          _this.setState({ oficios: JSON.parse(xhttp.responseText), loading: false });
         }
       };
       xhttp.open("GET", `https://pabloavelar.mx/votacion/retrievecertificates.php`, true);
@@ -46,7 +47,10 @@ export default class Voting extends Component {
       const email = this.props.route.params.email;
       const password = this.props.route.params.password;
 
-      let url = `https://pabloavelar.mx/votacion/sendvote.php?email=${email}&password=${password}&oficio=${this.state.actas[this.state.index]}&vote=${this.state.vote}`;
+      console.log("Correo: ", email);
+      console.log("Pass", password);
+
+      let url = `https://pabloavelar.mx/votacion/sendvote.php?email=${email}&password=${password}&oficio=${this.state.oficios[this.state.index]}&vote=${this.state.vote}`;
 
       const xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function () {
@@ -55,8 +59,12 @@ export default class Voting extends Component {
           console.log("Enviando voto: " + _this.state.vote);
           console.log("respuesta: " + xhttp.responseText);
 
+          if (xhttp.responseText != '1') {
+            Alert.alert("Error al registrar voto", "Contacta al administrador.");
+          }
+
           // Esperando a que se haga el voto
-          _this.setState({loading: false});
+          _this.setState({ loadingVote: false });
         }
       };
       xhttp.open("GET", url, true);
@@ -64,30 +72,38 @@ export default class Voting extends Component {
 
     }
 
-    getActas();
-    if (this.state.loading) {
-      // Se llama la primera vez
-      return (<View>
-        <Text>cargando...</Text>
-      </View>)
-    }
-
     const next = () => {
-      if(this.state.vote != 0){
-        if (this.state.index < this.state.actas.length - 1) {
+      if (this.state.vote != 0) {
+        console.log(`${this.state.index}/${this.state.oficios.length - 1}`);
+        if (this.state.index <= this.state.oficios.length - 1) {
           // Envia el voto a la BD
-          this.setState({loading: true});
           sendVote();
           this.state.index++;
-  
+
           // Quitar la selección del checkbox
-          this.setState({vote: 0})
+          this.setState({ vote: 0 })
         }
       }
+
+      if (this.state.index > this.state.oficios.length - 1) {
+        return (
+          <Finish />
+        )
+      }
+
     }
 
     const checkvotes = (vote) => {
       return this.state.vote == vote ? true : false;
+    }
+
+    getOficios();
+    if (this.state.loading) {
+      console.log("[cargando...]");
+      // Se llama la primera vez
+      return (<View>
+        <Text>cargando...</Text>
+      </View>)
     }
 
     return (
@@ -96,7 +112,7 @@ export default class Voting extends Component {
 
         </View>
         <View style={styles.voteFrame}>
-          <Text style={styles.txt_title}>{this.state.actas[this.state.index]}</Text>
+          <Text style={styles.txt_title}>{this.state.oficios[this.state.index]}</Text>
           <View style={styles.form}>
             <View style={{ ...styles.option, backgroundColor: '#52C85D' }}>
               <Icon name={'check'} size={20} style={{ ...styles.icon, color: palette.favor }} />
