@@ -12,31 +12,22 @@ const palette = {
     contra: '#5B0808',
 };
 
-export default class Finish extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
+const Finish = () => {
 
-        };
-    }
+    return (
+        <View style={styles.root}>
+            <View style={{ alignItems: 'center' }}>
 
-    render() {
+            </View>
+            <View style={styles.voteFrame}>
+                <View style={{ marginTop: '20%', height: '60%', alignItems: 'center', justifyContent: 'space-evenly' }}>
+                    <Text style={styles.txt_title}>La votación {'\n'}ha finalizado</Text>
+                    <Icon name={'check-circle'} size={200} style={{ ...styles.icon, color: palette.darkblue }} />
 
-        return (
-            <View style={styles.root}>
-                <View style={{ alignItems: 'center' }}>
-
-                </View>
-                <View style={styles.voteFrame}>
-                    <View style={{marginTop: '20%', height: '60%', alignItems: 'center', justifyContent: 'space-evenly'}}>
-                        <Text style={styles.txt_title}>La votación {'\n'}ha finalizado</Text>
-                        <Icon name={'check-circle'} size={200} style={{ ...styles.icon, color: palette.darkblue }} />
-
-                    </View>
                 </View>
             </View>
-        );
-    }
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -84,3 +75,5 @@ const styles = StyleSheet.create({
     },
 
 });
+
+export default Finish;

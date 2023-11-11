@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
+import Waiting from './waiting';
+import Finish from './finish';
 
 // Paleta de colores
 const palette = {
@@ -16,6 +18,7 @@ export default class ShowVotes extends Component {
             oficios: [],
             index: 0,
             loading: true,
+            isFinished: false
         };
     }
 
@@ -36,27 +39,44 @@ export default class ShowVotes extends Component {
         }
 
         const next = () => {
-            console.log(`${this.state.index}/${this.state.oficios.length-1}`);
+            console.log(`${this.state.index}/${this.state.oficios.length - 1}`);
             if (this.state.index <= this.state.oficios.length - 1) {
                 console.log(this.state.oficios[this.state.index]["Id"]);
                 this.state.index++;
             }
 
-            if (this.state.index == this.state.oficios.length - 1){
-                console.log("FINISH WE");
-                return (
-                    <Finish />
-                )
-            }
+            if (this.state.index > this.state.oficios.length - 1) {
+                console.log("SE HA TERMINADO LA VOTACION");
+                this.setState({isFinished: true});
+              }
         }
 
         // Se llama la primera vez
         getVotes();
         if (this.state.loading) {
-            return (<View>
-                <Text>cargando...</Text>
-            </View>)
+            return (
+                <Waiting />
+            )
         }
+
+        // Pantalla de carga de espera
+        if (this.state.loading || this.state.loadingVote) {
+            console.log("[cargando...]");
+            console.log("loading: ", this.state.loading);
+            console.log("loading vote: ", this.state.loadingVote);
+            // Se llama la primera vez
+            return (
+                <Waiting />
+            )
+        }
+
+        // Pantalla de finalización
+        if (this.state.isFinished) {
+            return (
+                <Finish />
+            )
+        }
+
         return (
             <View style={styles.root}>
                 <View style={{ alignItems: 'center' }}>
@@ -178,7 +198,7 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
 
-    number:{
+    number: {
         fontWeight: 'bold',
         fontSize: 20,
     }

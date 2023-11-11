@@ -5,7 +5,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import Login from './login';
 import Voting from './voting';
 import ShowVotes from './showvotes';
-import Finish from './finish';
 
 export default class Stack extends Component {
     constructor(props) {

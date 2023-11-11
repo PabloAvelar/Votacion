@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, Alert, TouchableOpacity } from 'react-na
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import Finish from './finish';
+import Waiting from './waiting';
 
 // Paleta de colores
 const palette = {
@@ -22,6 +23,7 @@ export default class Voting extends Component {
       loading: true,
       loadingVote: false,
       vote: 0,
+      isFinished: false
 
     };
   }
@@ -45,7 +47,7 @@ export default class Voting extends Component {
 
     const sendVote = () => {
       // Iniciando la espera hasta que se registre el voto
-      this.setState({loadingVote: true});
+      this.setState({ loadingVote: true });
 
       const email = this.props.route.params.email;
       const password = this.props.route.params.password;
@@ -77,7 +79,7 @@ export default class Voting extends Component {
 
     const next = () => {
       if (this.state.vote != 0) {
-        console.log(`${this.state.index}/${this.state.oficios.length - 1}`);
+        console.log(`${this.state.index + 1}/${this.state.oficios.length}`);
         if (this.state.index <= this.state.oficios.length - 1) {
           // Envia el voto a la BD
           sendVote();
@@ -89,9 +91,8 @@ export default class Voting extends Component {
       }
 
       if (this.state.index > this.state.oficios.length - 1) {
-        return (
-          <Finish />
-        )
+        console.log("SE HA TERMINADO LA VOTACION");
+        this.setState({isFinished: true});
       }
 
     }
@@ -100,15 +101,23 @@ export default class Voting extends Component {
       return this.state.vote == vote ? true : false;
     }
 
+    // Pantalla de carga de espera
     if (this.state.loading || this.state.loadingVote) {
       console.log("[cargando...]");
       console.log("loading: ", this.state.loading);
       console.log("loading vote: ", this.state.loadingVote);
       // Se llama la primera vez
       getOficios();
-      return (<View>
-        <Text>cargando...</Text>
-      </View>)
+      return (
+        <Waiting />
+      )
+    }
+
+    // Pantalla de finalización
+    if(this.state.isFinished){
+      return (
+        <Finish />
+      )
     }
 
     return (
