@@ -54,6 +54,9 @@ export default class Voting extends Component {
           // Se obtienen todos los registros con votos
           console.log("Enviando voto: " + _this.state.vote);
           console.log("respuesta: " + xhttp.responseText);
+
+          // Esperando a que se haga el voto
+          _this.setState({loading: false});
         }
       };
       xhttp.open("GET", url, true);
@@ -61,10 +64,19 @@ export default class Voting extends Component {
 
     }
 
+    getActas();
+    if (this.state.loading) {
+      // Se llama la primera vez
+      return (<View>
+        <Text>cargando...</Text>
+      </View>)
+    }
+
     const next = () => {
       if(this.state.vote != 0){
         if (this.state.index < this.state.actas.length - 1) {
           // Envia el voto a la BD
+          this.setState({loading: true});
           sendVote();
           this.state.index++;
   
@@ -73,15 +85,6 @@ export default class Voting extends Component {
         }
       }
     }
-    getActas();
-    if (this.state.loading) {
-      // Se llama la primera vez
-
-      return (<View>
-        <Text>cargando...</Text>
-      </View>)
-    }
-
 
     const checkvotes = (vote) => {
       return this.state.vote == vote ? true : false;
