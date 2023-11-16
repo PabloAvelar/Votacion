@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, Alert, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
-import Finish from './finish';
-import Waiting from './waiting';
+import Finish from './components/finish';
+import Waiting from './components/waiting';
 
 // Paleta de colores
 const palette = {
@@ -18,12 +18,12 @@ export default class Voting extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      oficios: [],
-      index: 0,
+      oficios: "",
       loading: true,
       loadingVote: false,
       vote: 0,
-      isFinished: false
+      isFinished: false,
+      waiting: false
 
     };
   }
@@ -32,15 +32,25 @@ export default class Voting extends Component {
     // Copiando la referencia de ShowVotes
     _this = this;
 
-    const getOficios = () => {
+    // Obteniendo el acta actual
+    const getCurrentRecord = () => {
+      console.log("x");
       const xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           // Se obtienen todos los registros con votos
-          _this.setState({ oficios: JSON.parse(xhttp.responseText), loading: false });
+
+          // Se verifica si el acta cambió
+          let aux = _this.state.oficios;
+          let getRecord = JSON.parse(xhttp.responseText)['Id'];
+
+          if (aux != getRecord) {
+            console.log("CAMBIO DE ACTA")
+            _this.setState({ oficios: getRecord, loading: false });
+          }
         }
       };
-      xhttp.open("GET", `https://pabloavelar.mx/votacion/retrievecertificates.php`, true);
+      xhttp.open("GET", `https://pabloavelar.mx/votacion/currentcertificate.php`, true);
       xhttp.send();
 
     }
@@ -69,7 +79,7 @@ export default class Voting extends Component {
           }
 
           // Una vez que cargue el voto, se termina la espera
-          _this.setState({ loadingVote: false });
+          _this.setState({ loadingVote: false, waiting: true });
         }
       };
       xhttp.open("GET", url, true);
@@ -77,115 +87,133 @@ export default class Voting extends Component {
 
     }
 
-    const next = () => {
+    const toVote = () => {
       if (this.state.vote != 0) {
-        console.log(`${this.state.index + 1}/${this.state.oficios.length}`);
-        if (this.state.index <= this.state.oficios.length - 1) {
-          // Envia el voto a la BD
-          sendVote();
-          this.state.index++;
+        // Envia el voto a la BD
+        sendVote();
 
-          // Quitar la selección del checkbox
-          this.setState({ vote: 0 })
-        }
+        // Quitar la selección del checkbox
+        this.setState({ vote: 0 })
       }
 
-      if (this.state.index > this.state.oficios.length - 1) {
+      if (this.state.oficios == '1') {
         console.log("SE HA TERMINADO LA VOTACION");
-        this.setState({isFinished: true});
+        this.setState({ isFinished: true });
       }
 
     }
 
     const checkvotes = (vote) => {
-      return this.state.vote == vote ? true : false;
+      return this.state.vote == vote;
     }
 
-    // Pantalla de carga de espera
-    if (this.state.loading || this.state.loadingVote) {
-      console.log("[cargando...]");
-      console.log("loading: ", this.state.loading);
-      console.log("loading vote: ", this.state.loadingVote);
-      // Se llama la primera vez
-      getOficios();
-      return (
-        <Waiting />
-      )
+    const isVotingFinished = () => {
+      return this.state.oficios == '1';
     }
 
-    // Pantalla de finalización
-    if(this.state.isFinished){
+    // Escuchando cambios en actas hasta que sea el final
+    const listening = () => {
+      if (!isVotingFinished()) {
+        console.log("aaaa");
+        getCurrentRecord();
+      } else {
+        console.log("no");
+      }
+    }
+
+    // Pantalla de espera para la siguiente acta
+    if (this.state.waiting) {
       return (
         <Finish />
       )
     }
 
+    // Pantalla de carga de espera a que se registre el voto
+    if (this.state.loading || this.state.loadingVote && !isVotingFinished()) {
+      console.log("[cargando...]");
+      console.log("loading: ", this.state.loading);
+      console.log("loading vote: ", this.state.loadingVote);
+      // // Se llama la primera vez
+      // getCurrentRecord();
+
+      return (
+        <Waiting />
+      )
+    }
+
+    while(1===1){
+      console.log("asdasdsa");
+    }
+
     return (
-      <View style={styles.root}>
-        <View style={{ alignItems: 'center' }}>
+      <>
+        
+        <View style={styles.root}>
+          <View style={{ alignItems: 'center' }}>
 
-        </View>
-        <View style={styles.voteFrame}>
-          <Text style={styles.txt_title}>{this.state.oficios[this.state.index]}</Text>
-          <View style={styles.form}>
-            <View style={{ ...styles.option, backgroundColor: '#52C85D' }}>
-              <Icon name={'check'} size={20} style={{ ...styles.icon, color: palette.favor }} />
-              <Text style={{ ...styles.optionText, color: palette.favor }}>A Favor</Text>
-              <View style={{ ...styles.checkview, backgroundColor: palette.favor }}>
-                <BouncyCheckbox
-                  size={55}
-                  fillColor={palette.favor}
-                  unfillColor={palette.favor}
-                  disableBuiltInState={true}
-                  onPress={() => {
-                    this.setState({ vote: 1 })
-                  }}
-                  isChecked={checkvotes(1)}
-                />
+          </View>
+          <View style={styles.voteFrame}>
+            <Text style={styles.txt_title}>{this.state.oficios}</Text>
+            <View style={styles.form}>
+              <View style={{ ...styles.option, backgroundColor: '#52C85D' }}>
+                <Icon name={'check'} size={20} style={{ ...styles.icon, color: palette.favor }} />
+                <Text style={{ ...styles.optionText, color: palette.favor }}>A Favor</Text>
+                <View style={{ ...styles.checkview, backgroundColor: palette.favor }}>
+                  <BouncyCheckbox
+                    size={55}
+                    fillColor={palette.favor}
+                    unfillColor={palette.favor}
+                    disableBuiltInState={true}
+                    onPress={() => {
+                      this.setState({ vote: 1 })
+                    }}
+                    isChecked={checkvotes(1)}
+                  />
 
+                </View>
               </View>
-            </View>
 
-            <View style={{ ...styles.option, backgroundColor: '#C85252' }}>
-              <Icon name={'times'} size={20} style={{ ...styles.icon, color: palette.contra, }} />
-              <Text style={{ ...styles.optionText, color: palette.contra, }}>En Contra</Text>
-              <View style={{ ...styles.checkview, backgroundColor: palette.contra, }}>
-                <BouncyCheckbox
-                  size={55}
-                  fillColor={palette.contra}
-                  unfillColor={palette.contra}
-                  disableBuiltInState={true}
-                  onPress={() => {
-                    this.setState({ vote: 2 })
-                  }}
-                  isChecked={checkvotes(2)}
-                />
+              <View style={{ ...styles.option, backgroundColor: '#C85252' }}>
+                <Icon name={'times'} size={20} style={{ ...styles.icon, color: palette.contra, }} />
+                <Text style={{ ...styles.optionText, color: palette.contra, }}>En Contra</Text>
+                <View style={{ ...styles.checkview, backgroundColor: palette.contra, }}>
+                  <BouncyCheckbox
+                    size={55}
+                    fillColor={palette.contra}
+                    unfillColor={palette.contra}
+                    disableBuiltInState={true}
+                    onPress={() => {
+                      this.setState({ vote: 2 })
+                    }}
+                    isChecked={checkvotes(2)}
+                  />
+                </View>
               </View>
-            </View>
 
-            <View style={styles.option}>
-              <Icon name={'window-minimize'} size={20} style={styles.icon} />
-              <Text style={styles.optionText}>Abstención</Text>
-              <View style={{ ...styles.checkview, backgroundColor: palette.darkblue }}>
-                <BouncyCheckbox
-                  size={55}
-                  fillColor={palette.darkblue}
-                  unfillColor={palette.darkblue}
-                  disableBuiltInState={true}
-                  onPress={() => {
-                    this.setState({ vote: 3 })
-                  }}
-                  isChecked={checkvotes(3)}
-                />
+              <View style={styles.option}>
+                <Icon name={'window-minimize'} size={20} style={styles.icon} />
+                <Text style={styles.optionText}>Abstención</Text>
+                <View style={{ ...styles.checkview, backgroundColor: palette.darkblue }}>
+                  <BouncyCheckbox
+                    size={55}
+                    fillColor={palette.darkblue}
+                    unfillColor={palette.darkblue}
+                    disableBuiltInState={true}
+                    onPress={() => {
+                      this.setState({ vote: 3 })
+                    }}
+                    isChecked={checkvotes(3)}
+                  />
+                </View>
               </View>
-            </View>
 
-            <TouchableOpacity style={styles.button} onPress={next}>
-              <Text style={{ color: palette.white, fontSize: 20, fontWeight: 'bold' }}>Votar</Text>
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={toVote}>
+                <Text style={{ color: palette.white, fontSize: 20, fontWeight: 'bold' }}>Votar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      </>
     );
   }
 }

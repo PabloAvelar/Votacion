@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/dist/FontAwesome';
-import Waiting from './waiting';
-import Finish from './finish';
+import Waiting from './components/waiting';
+import Finish from './components/finish';
 
 // Paleta de colores
 const palette = {
