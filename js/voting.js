@@ -53,7 +53,7 @@ const Voting = () => {
         if (prevoficio !== aux) {
           console.log("puedes votar otra vez");
           setOficios(aux);
-          setHasVoted(false);
+          setHasVoted(false)
         }
 
         // Si ya se ha terminado la votación
